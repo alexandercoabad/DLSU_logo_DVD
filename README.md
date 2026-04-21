@@ -1,8 +1,8 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# DLSU Logo in a DVD-like screensaver 
 
-- [Read the documentation for project](docs/info.md)
+You can see it in real-time here https://vga-playground.com/?repo=https://github.com/alexandercoabad/DLSU_logo_DVD
 
 ## What is Tiny Tapeout?
 
