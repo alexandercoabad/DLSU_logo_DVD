@@ -65,7 +65,7 @@ module tt_um_tinytapeout_dvd_screensaver (
   reg dir_y;
 
   wire pixel_value;
-  reg [2:0] color_index;
+  reg [1:0] color_index;
   wire [5:0] color;
 
   wire [9:0] x = pix_x - logo_left;
@@ -79,7 +79,7 @@ module tt_um_tinytapeout_dvd_screensaver (
   );
 
   palette palette_inst (
-      .color_index(cfg_color ? color_index : `COLOR_WHITE),
+      .color_index(cfg_color ? 1 : `COLOR_WHITE),
       .rrggbb(color)
   );
 
@@ -116,19 +116,16 @@ module tt_um_tinytapeout_dvd_screensaver (
         logo_top  <= logo_top + (dir_y ? 1 : -1);
         if (logo_left - 1 == 0 && !dir_x) begin
           dir_x <= 1;
-          color_index <= color_index + 1;
+          color_index <= color_index + 0;
         end
         if (logo_left + 1 == DISPLAY_WIDTH - LOGO_SIZE && dir_x) begin
           dir_x <= 0;
-          color_index <= color_index + 1;
         end
         if (logo_top - 1 == 0 && !dir_y) begin
           dir_y <= 1;
-          color_index <= color_index + 1;
         end
         if (logo_top + 1 == DISPLAY_HEIGHT - LOGO_SIZE && dir_y) begin
           dir_y <= 0;
-          color_index <= color_index + 1;
         end
       end
     end
