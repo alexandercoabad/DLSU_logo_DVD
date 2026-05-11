@@ -19,7 +19,7 @@ project:
     - "tt_um_tinytapeout_dvd_screensaver.v"
     - "bitmap_rom.v"
     - "vga_sync_generator.v"
-    - "palette.v"
+  
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
