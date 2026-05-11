@@ -10,15 +10,13 @@ parameter LOGO_SIZE = 128;  // Size of the logo in pixels
 parameter DISPLAY_WIDTH = 640;  // VGA display width
 parameter DISPLAY_HEIGHT = 480;  // VGA display height
 
-`define COLOR_WHITE 3'd7
-
 module tt_um_tinytapeout_dvd_screensaver (
-    input  wire [7:0] ui_in,    // Dedicated inputs
+    input  wire [7:0] ui_in,    // Dedicated inputs - UNUSED
     output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
+    input  wire [7:0] uio_in,   // IOs: Input path - UNUSED
     output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
+    output wire [7:0] uio_oe,   // IOs: Enable path
+    input  wire       ena,      // always 1 when the design is powered
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
@@ -26,26 +24,20 @@ module tt_um_tinytapeout_dvd_screensaver (
   // VGA signals
   wire hsync;
   wire vsync;
-  reg [1:0] R;
-  reg [1:0] G;
-  reg [1:0] B;
   wire video_active;
   wire [9:0] pix_x;
   wire [9:0] pix_y;
+  reg  video_out;
 
-  // Configuration
-  wire cfg_tile = ui_in[0];
-  wire cfg_color = ui_in[1];
+  // TinyVGA PMOD mapping (Single bit video_out tied to all color channels)
+  assign uo_out = {hsync, video_out, video_out, video_out, vsync, video_out, video_out, video_out};
 
-  // TinyVGA PMOD
-  assign uo_out  = {hsync, B[0], G[0], R[0], vsync, B[1], G[1], R[1]};
+  // Set IOs to static outputs/disabled to remove input dependency
+  assign uio_out = 8'b00000000;
+  assign uio_oe  = 8'b00000000;
 
-  // Unused outputs assigned to 0.
-  assign uio_out = 0;
-  assign uio_oe  = 0;
-
-  // Suppress unused signals warning
-  wire _unused_ok = &{ena, ui_in[7:1], uio_in};
+  // Explicitly ignore all inputs to satisfy linter/suppress warnings
+  wire _unused_ok = &{ena, ui_in, uio_in};
 
   reg [9:0] prev_y;
 
@@ -65,12 +57,12 @@ module tt_um_tinytapeout_dvd_screensaver (
   reg dir_y;
 
   wire pixel_value;
-  reg [1:0] color_index;
-  wire [5:0] color;
 
   wire [9:0] x = pix_x - logo_left;
   wire [9:0] y = pix_y - logo_top;
-  wire logo_pixels = cfg_tile || (x[9:7] == 0 && y[9:7] == 0);
+  
+  // Logic simplified: logo only renders within the 128x128 bounding box
+  wire logo_region = (x[9:7] == 0 && y[9:7] == 0);
 
   bitmap_rom rom1 (
       .x(x[6:0]),
@@ -78,26 +70,12 @@ module tt_um_tinytapeout_dvd_screensaver (
       .pixel(pixel_value)
   );
 
-  palette palette_inst (
-      .color_index(cfg_color ? 1 : `COLOR_WHITE),
-      .rrggbb(color)
-  );
-
-  // RGB output logic
+  // Video Output Logic
   always @(posedge clk) begin
     if (~rst_n) begin
-      R <= 0;
-      G <= 0;
-      B <= 0;
+      video_out <= 0;
     end else begin
-      R <= 0;
-      G <= 0;
-      B <= 0;
-      if (video_active && logo_pixels) begin
-        R <= pixel_value ? color[5:4] : 0;
-        G <= pixel_value ? color[3:2] : 0;
-        B <= pixel_value ? color[1:0] : 0;
-      end
+      video_out <= video_active && logo_region && pixel_value;
     end
   end
 
@@ -108,23 +86,22 @@ module tt_um_tinytapeout_dvd_screensaver (
       logo_top <= 200;
       dir_y <= 0;
       dir_x <= 1;
-      color_index <= 0;
     end else begin
       prev_y <= pix_y;
       if (pix_y == 0 && prev_y != pix_y) begin
         logo_left <= logo_left + (dir_x ? 1 : -1);
         logo_top  <= logo_top + (dir_y ? 1 : -1);
-        if (logo_left - 1 == 0 && !dir_x) begin
+
+        if (logo_left <= 1 && !dir_x) begin
           dir_x <= 1;
-          color_index <= color_index + 0;
         end
-        if (logo_left + 1 == DISPLAY_WIDTH - LOGO_SIZE && dir_x) begin
+        if (logo_left >= (DISPLAY_WIDTH - LOGO_SIZE - 1) && dir_x) begin
           dir_x <= 0;
         end
-        if (logo_top - 1 == 0 && !dir_y) begin
+        if (logo_top <= 1 && !dir_y) begin
           dir_y <= 1;
         end
-        if (logo_top + 1 == DISPLAY_HEIGHT - LOGO_SIZE && dir_y) begin
+        if (logo_top >= (DISPLAY_HEIGHT - LOGO_SIZE - 1) && dir_y) begin
           dir_y <= 0;
         end
       end
