@@ -4,6 +4,9 @@
 
 You can see it in real-time here https://vga-playground.com/?repo=https://github.com/alexandercoabad/DLSU_logo_DVD
 
+<img width="696" height="584" alt="image" src="https://github.com/user-attachments/assets/c790d1e2-911f-450c-a358-d3d67dbdc9bb" />
+
+
 ## What is Tiny Tapeout?
 
 Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
