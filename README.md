@@ -6,8 +6,15 @@ You can see it in real-time here https://vga-playground.com/?repo=https://github
 
 <img width="696" height="584" alt="image" src="https://github.com/user-attachments/assets/c790d1e2-911f-450c-a358-d3d67dbdc9bb" />
 
+<img width="952" height="649" alt="Screenshot 2026-06-19 at 8 24 46 AM" src="https://github.com/user-attachments/assets/c1c65fb3-625e-49de-afcc-cf69aa56119e" />
 
-## What is Tiny Tapeout?
+
+<img width="846" height="574" alt="Screenshot 2026-06-19 at 8 24 08 AM" src="https://github.com/user-attachments/assets/2df57d59-91b5-4478-a26d-742aa67ac777" />
+
+
+
+## link to 3D viewer: 
+https://gds-viewer.tinytapeout.com/?model=https://alexandercoabad.github.io/DLSU_logo_DVD/tinytapeout.oas&pdk=sky130A
 
 Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
 
